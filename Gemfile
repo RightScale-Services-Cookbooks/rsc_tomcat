@@ -1,6 +1,12 @@
 source 'https://rubygems.org'
 
+gem 'rake'
+gem 'chef', '~> 12.16.0'
+gem 'berkshelf'
+gem 'kitchen-dokken'
 gem 'kitchen-vagrant'
-gem 'test-kitchen','~> 1.3.0'
-gem 'berkshelf', '~> 2.0.0'
-gem 'thor-foodcritic'
+gem 'coveralls', require: false
+
+group :test do
+  gem 'machine_tag'
+end

@@ -1,0 +1,12 @@
+<Context docBase="<%= @war %>"
+        debug="5" reloadable="true" crossContext="true" allowLinking="true">
+  <Environment name="appEnvironment"
+          value="<%= node.chef_environment %>"
+          type="java.lang.String"
+          override="false"/>
+  <Resource name="jdbc/<%= @app %>" auth="Container" type="javax.sql.DataSource"
+               username="<%= @database['user'] %>"
+               password="<%= @database['password'] %>"
+               driverClassName="<%= @database['driver'] %>"
+               url="jdbc:<%= @database['provider'] %>://<%= @database['host'] %>:<%= @database['port'] %>/<%= @database['schema'] %>"/>
+</Context>

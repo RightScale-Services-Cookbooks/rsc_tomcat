@@ -17,81 +17,89 @@
 # limitations under the License.
 #
 
-marker "recipe_start_rightscale" do
-  template "rightscale_audit_entry.erb"
+marker 'recipe_start_rightscale' do
+  template 'rightscale_audit_entry.erb'
 end
 
-#including defaults
-include_recipe 'apt'
+# including defaults
 include_recipe 'build-essential'
 
-#override some attributes
+# override some attributes
 node.override['java']['install_flavor'] = node['rsc_tomcat']['java']['flavor']
-if node['rsc_tomcat']['java']['flavor']=='oracle'
-  node.override['java']['oracle']['accept_oracle_download_terms']=true
+if node['rsc_tomcat']['java']['flavor'] == 'oracle'
+  node.override['java']['oracle']['accept_oracle_download_terms'] = true
 end
 
-node.force_override['java']['jdk_version']    = node['rsc_tomcat']['java']['version']
-node.force_override['tomcat']['java_options'] = node['rsc_tomcat']['java']['options']
-node.override['tomcat']['port'] = node['tomcat']['listen_port']
+node.override['java']['jdk_version'] = node['rsc_tomcat']['java']['version']
 
 include_recipe 'java'
+include_recipe 'rsc_ros'
 
-# TODO: The database block in the java_webapp block below doesn't accept node variables.
-# It is a known issue and will be fixed by Opscode.
-#
-database_host = node['rsc_tomcat']['database']['host']
-database_user = node['rsc_tomcat']['database']['user']
-database_password = node['rsc_tomcat']['database']['password']
-database_schema = node['rsc_tomcat']['database']['schema']
-database_port = node['rsc_tomcat']['database']['port']
-database_max_active = node['rsc_tomcat']['database']['max_active']
-database_max_idle = node['rsc_tomcat']['database']['max_idle']
-database_max_wait = node['rsc_tomcat']['database']['max_wait']
-database_adapter = node['rsc_tomcat']['database']['adapter']
-
-#decide how to get file.
-# if the file is remote, download it and install from local path
-if node['rsc_tomcat']['war']['path'] =~ /^http/
-  repository= "#{Chef::Config[:file_cache_path]}/#{node['rsc_tomcat']['war']['path'].split('/').last}"
-  remote_file repository do
-    source node['rsc_tomcat']['war']['path']
-  end
-
-else
-  repository = node['rsc_tomcat']['war']['path']
-
+user 'tomcat'
+group 'tomcat' do
+  members 'tomcat'
+  action :create
 end
 
-application node['rsc_tomcat']['application_name'] do
-  path "#{node['rsc_tomcat']['app_root']}/#{node['rsc_tomcat']['application_name']}"
-  owner node['tomcat']['user']
-  group node['tomcat']['group']
+tomcat_install 'default' do
+  version node['rsc_tomcat']['version']
+  install_path node['rsc_tomcat']['home']
+  exclude_docs true
+  exclude_examples true
+  exclude_manager false
+  exclude_hostmanager false
+  tomcat_user 'tomcat'
+  tomcat_group 'tomcat'
+end
 
+directory "#{node['rsc_tomcat']['home']}/conf/Catalina/localhost" do
+  recursive true
+end
 
-  # Configure SCM to check out application from
-  repository repository
-  #revision node['rsc_tomcat']['war']['revision']
-  scm_provider Chef::Provider::File::Deploy
+war_file = node['rsc_ros']['file'].split('/').last
+# setup the default context file
+template "#{node['rsc_tomcat']['home']}/conf/Catalina/localhost/#{node['rsc_tomcat']['application_name']}.xml" do
+  source node['rsc_tomcat']['context_template']
+  cookbook node['rsc_tomcat']['cookbook']
+  variables(
+    app: node['rsc_tomcat']['application_name'],
+    war: "#{node['rsc_tomcat']['home']}/webapps/#{war_file}",
+    database:   node['rsc_tomcat']['database']
+  )
+  owner 'tomcat'
+  group 'tomcat'
+  action :create
+end
 
+rsc_ros "#{node['rsc_tomcat']['home']}/webapps/#{war_file}" do
+  storage_provider node['rsc_ros']['provider']
+  access_key node['rsc_ros']['access_key']
+  secret_key node['rsc_ros']['secret_key']
+  bucket node['rsc_ros']['bucket']
+  file node['rsc_ros']['file']
+  destination "#{node['rsc_ros']['destination']}/#{war_file}"
+  region node['rsc_ros']['region']
+  action :download
+end
 
-  #Configure Tomcat web app
-  java_webapp do
+execute 'war file permissions' do
+  command "chown tomcat:tomcat #{node['rsc_tomcat']['home']}/webapps/#{war_file}"
+  action :run
+end
 
-    database do
-      driver     database_adapter
-      host       database_host
-      database   database_schema
-      username   database_user
-      password   database_password
-      port 	     database_port
-      max_active database_max_active
-      max_idle   database_max_idle
-      max_wait   database_max_wait
-    end
-  end
+# install and start the tomcat service
+tomcat_service 'default' do
+  action [:start, :enable]
+  install_path node['rsc_tomcat']['home']
+  env_vars [{
+    'CATALINA_OPTS' => node['rsc_tomcat']['catalina_options'],
+    'CATALINA_PID' => '$CATALINA_BASE/bin/tomcat.pid' }]
+  sensitive true
+  tomcat_user 'tomcat'
+  tomcat_group 'tomcat'
+end
 
-  tomcat
-
-  action :force_deploy
+service 'iptable' do
+  action :stop
+  only_if { node['platform_family'] == 'fedora' }
 end
