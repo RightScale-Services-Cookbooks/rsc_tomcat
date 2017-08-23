@@ -7,6 +7,8 @@ describe 'rsc_tomcat::application_backend_detached' do
       node.set['rsc_tomcat']['remote_attach_recipe'] = 'rs-haproxy::frontend'
       node.set['cloud']['provider'] = 'vagrant'
       node.set['rightscale']['instance_uuid'] = '111111111'
+      node.set['rightscale']['monitoring_collector_http'] = 'localhost'
+      node.set['rightscale']['RS_RLL_PORT'] = '12345'
     end.converge(described_recipe)
   end
   let(:node) { chef_run.node }

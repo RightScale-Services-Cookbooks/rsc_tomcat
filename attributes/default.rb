@@ -43,6 +43,9 @@ default['rsc_tomcat']['application_name'] = 'myapp'
 # The root of the application
 default['rsc_tomcat']['app_root'] = '/home/webapps'
 
+# The maximum number of request processing threads to be created.
+default['rsc_tomcat']['max_threads'] = 400
+
 # Database configuration
 # The database provider
 default['rsc_tomcat']['database']['provider'] = 'mysql'
@@ -75,8 +78,11 @@ default['rsc_tomcat']['remote_detach_recipe'] = 'rs-haproxy::frontend'
 # context template source, use override to use context from another cookbook
 default['rsc_tomcat']['context_template'] = 'context.xml.erb'
 default['rsc_tomcat']['cookbook'] = 'rsc_tomcat'
-# tomcat configuration
 
+# server.xml template source, use override to use server.xml from another cookbook
+default['rsc_tomcat']['server_template'] = 'server.xml.erb'
+
+# tomcat configuration
 default['rsc_tomcat']['version'] = '8.0.36'
 default['rsc_tomcat']['home'] = '/opt/tomcat'
 default['rsc_tomcat']['catalina_options'] = '-Xmx128M -Djava.awt.headless=true'

@@ -1,10 +1,10 @@
 name             'rsc_tomcat'
 maintainer       'RightScale, Inc.'
 maintainer_email 'cookbooks@rightscale.com'
-license          'Apache 2.0'
+license          'Apache-2.0'
 description      'Installs/Configures tomcat app server'
 long_description IO.read(File.join(File.dirname(__FILE__), 'README.md'))
-version          '2.0.0'
+version          '2.0.1'
 issues_url       'https://github.com/RightScale-Services-Cookbooks/rsc_tomcat/issues' if respond_to?(:issues_url)
 source_url       'https://github.com/RightScale-Services-Cookbooks/rsc_tomcat' if respond_to?(:source_url)
 chef_version     '>= 12.0' if respond_to?(:chef_version)
@@ -14,13 +14,16 @@ depends 'apt'
 depends 'build-essential'
 depends 'tomcat', '~> 2.0'
 depends 'collectd'
-depends 'rightscale_tag', '~> 2.0.0'
-depends 'machine_tag', '~> 2.0.0'
+depends 'rightscale_tag', '~> 2.0'
+depends 'machine_tag', '~> 2.0'
 depends 'yum-epel'
 depends 'java'
-depends 'rsc_remote_recipe', '~> 10.1.0'
-depends 'rs-base', '~> 2.0.0'
+depends 'rsc_remote_recipe', '~> 10.2.0'
+depends 'rs-base', '~> 2.1.3'
 depends 'rsc_ros'
+
+supports 'ubuntu'
+supports 'centos'
 
 recipe 'rsc_tomcat::default', 'Installs/configures a tomcat application server'
 recipe 'rsc_tomcat::code_update', 'updates the application code'
@@ -161,5 +164,12 @@ attribute 'tomcat/install_method',
 attribute 'tomcat/tar_version',
   display_name: 'Tomcat tar version',
   description: 'Tomcat version to install from tar',
+  required: 'optional',
+  recipes: ['rsc_tomcat::default']
+
+attribute 'rsc_tomcat/max_threads',
+  display_name: 'maxThreads',
+  description: 'The maximum number of request processing threads to be created by this Connector, which therefore determines the maximum number of simultaneous requests that can be handled.   Example: 5000',
+  default: '300',
   required: 'optional',
   recipes: ['rsc_tomcat::default']

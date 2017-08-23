@@ -23,6 +23,7 @@ $LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
 require 'chefspec'
 require 'chefspec/berkshelf'
 require 'helper'
+require 'machine_tag'
 
 ChefSpec::Coverage.start!
 

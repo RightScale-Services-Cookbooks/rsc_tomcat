@@ -102,6 +102,7 @@ suites:
       listen_port: '8080'
       bind_network_interface: 'private'
       vhost_path: 'www.example.com'
+      max_threads: '400'
       java:
         version: '8'
         flavor: 'oracle'
@@ -113,3 +114,5 @@ suites:
         schema: 'app_test'
     rightscale:
       instance_uuid: '1111111'
+      RS_RLL_PORT: '12345'
+      monitoring_collector_http: 'localhost'

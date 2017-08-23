@@ -3,6 +3,10 @@ rsc_tomcat Cookbook CHANGELOG
 
 This file is used to list changes made in each version of the rsc_tomcat cookbook.
 
+v2.0.1
+------
+- added maxThreads as an input
+
 v2.0.0
 ------
 - updating to Chef 12

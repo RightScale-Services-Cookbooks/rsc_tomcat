@@ -11,6 +11,8 @@ describe 'rsc_tomcat::tags' do
       # node.set['rsc_tomcat']['war']['path'] = 'https://tomcat.apache.org/tomcat-6.0-doc/appdev/sample/sample.war'
       # node.set['rightscale']['refresh_token'] = '123456abcdef'
       # node.set['rightscale']['api_url'] = 'https://us-3.rightscale.com'
+      node.set['rightscale']['monitoring_collector_http'] = 'localhost'
+      node.set['rightscale']['RS_RLL_PORT'] = '12345'
     end.converge(described_recipe)
   end
   let(:node) { chef_run.node }

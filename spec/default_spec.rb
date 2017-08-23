@@ -7,6 +7,7 @@ describe 'rsc_tomcat::default' do
       node.set['rsc_tomcat']['listen_port'] = '8080'
       node.set['rsc_tomcat']['bind_network_interface'] = 'private'
       node.set['rsc_tomcat']['vhost_path'] = 'www.example.com'
+      node.set['rsc_tomcat']['max_threads'] = '400'
       node.set['rsc_ros']['file'] = 'sample/sample.war'
       node.set['rsc_ros']['provider'] = 'aws'
       node.set['rsc_ros']['access_key'] = 'abc123'
@@ -16,6 +17,8 @@ describe 'rsc_tomcat::default' do
       node.set['rsc_ros']['region'] = 'us-east-1'
       node.set['rightscale']['refresh_token'] = '123456abcdef'
       node.set['rightscale']['api_url'] = 'https://us-3.rightscale.com'
+      node.set['rightscale']['monitoring_collector_http'] = 'localhost'
+      node.set['rightscale']['RS_RLL_PORT'] = '12345'
     end.converge(described_recipe)
   end
   let(:node) { chef_run.node }

@@ -39,6 +39,7 @@ The RightScale API is used to run recipes on the HaProxy load balancer.
 * `node['rsc_tomcat']['version']` - Tomcat Version
 * `node['rsc_tomcat']['home']` - Tomcat Install Location
 * `node['rsc_tomcat']['catalina_options']` - 'Tomcat Catalina Options'
+* `node['rsc_tomcat']['max_threads']` - 'The maximum number of request processing threads to be created by this connector'
 
 
 # Recipes

@@ -87,6 +87,18 @@ execute 'war file permissions' do
   action :run
 end
 
+# create the server.xml with maxThreads option.
+template "#{node['rsc_tomcat']['home']}/conf/server.xml" do
+  source node['rsc_tomcat']['server_template']
+  cookbook node['rsc_tomcat']['cookbook']
+  variables(
+    maxthread: node['rsc_tomcat']['max_threads']
+  )
+  owner 'tomcat'
+  group 'tomcat'
+  action :create
+end
+
 # install and start the tomcat service
 tomcat_service 'default' do
   action [:start, :enable]

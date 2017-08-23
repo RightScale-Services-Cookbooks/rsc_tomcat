@@ -65,3 +65,5 @@ suites:
         schema: 'app_test'
     rightscale:
       instance_uuid: '1111111'
+      RS_RLL_PORT: '12345'
+      monitoring_collector_http: 'localhost'
