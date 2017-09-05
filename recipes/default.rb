@@ -92,7 +92,8 @@ template "#{node['rsc_tomcat']['home']}/conf/server.xml" do
   source node['rsc_tomcat']['server_template']
   cookbook node['rsc_tomcat']['cookbook']
   variables(
-    maxthread: node['rsc_tomcat']['max_threads']
+    maxthread: node['rsc_tomcat']['max_threads'],
+    tomcatversion: node['rsc_tomcat']['version']
   )
   owner 'tomcat'
   group 'tomcat'

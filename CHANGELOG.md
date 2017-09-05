@@ -3,9 +3,13 @@ rsc_tomcat Cookbook CHANGELOG
 
 This file is used to list changes made in each version of the rsc_tomcat cookbook.
 
+v2.0.2
+-----
+ -updated maxThreads setting to exclude JasperListener for tomcat 8 and above since it had been deprecated in server.xml
+
 v2.0.1
 ------
-- added maxThreads as an input
+- added maxThreads as an input for tomcat 7
 
 v2.0.0
 ------
